@@ -34,8 +34,8 @@ function PieChart() {
     
     const half = width / 2;
     return (
-        <div className='mt-3 p-2 border-2 border-black rounded-md'>
-            <svg width={width} height={height}>
+        <div className='mt-3 p-2 border-2 border-black rounded-md '>
+            <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
                 <Group top={half} left={half}>
                     <Pie 
                         data={dataArray}
@@ -49,7 +49,7 @@ function PieChart() {
                     >
                          {(pie) => {
                             return pie.arcs.map((arc) => {
-                                console.log(arc);
+                                // console.log(arc);
                                 return (
                                     <g
                                         key={arc.data.name}
@@ -71,9 +71,18 @@ function PieChart() {
                                 textAnchor="middle"
                                 fill={active.color}
                                 fontSize={fontSize}
-                                dy={20}
+                                dy={30}
                             >
-                                {`${active.value} ${active.name}`}
+                                {`${active.value} % `}
+                            </Text>
+                            
+                            <Text
+                                textAnchor="middle"
+                                fill={active.color}
+                                fontSize={fontSize}
+                                dy={10}
+                            >
+                                {`  ${active.name}`}
                             </Text>
                         </>
                     )
