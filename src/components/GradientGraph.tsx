@@ -10,12 +10,25 @@ import { curveMonotoneX } from "@visx/curve";
 import { TooltipWithBounds, useTooltip, defaultStyles } from "@visx/tooltip";
 import { localPoint } from "@visx/event";
 import { timeFormat } from "d3-time-format";
+import { scaleOrdinal } from '@visx/scale';
+import { Text } from "@visx/text";
+import {
+
+    LegendOrdinal,
+
+    LegendItem,
+    LegendLabel,
+} from '@visx/legend';
+
+
 function GradientGraph() {
-    // const getGreenToRed = (percent: any) => {
-    //     const r = 255 * percent / 100;
-    //     const g = 255 - (255 * percent / 100);
-    //     return 'rgb(' + r + ',' + g + ',0)';
-    // }
+
+
+
+
+
+    const legendGlyphSize = 15;
+
     const browserUsage = Mock.browserUsage;
     const data = browserUsage;
     console.log(data)
@@ -25,8 +38,8 @@ function GradientGraph() {
         background: "#161434",
         color: "#ADADD3",
         fontFamily:
-          '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
-      };
+            '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
+    };
 
     let fireFox: any = []
 
@@ -85,7 +98,7 @@ function GradientGraph() {
         tooltipData,
         tooltipLeft = 0,
         tooltipTop = 0,
-      } = useTooltip<typeof fireFox>();
+    } = useTooltip<typeof fireFox>();
     function abc(a) {
 
         a.map((d) => {
@@ -120,13 +133,21 @@ function GradientGraph() {
     console.log(xScale)
     const yScale = scaleLinear({
         range: [yMax, 0],
-        domain: [0, parseInt(max(GoogleChrome, y)) + 2],
+        // domain: [0, parseInt(max(GoogleChrome, y)) + 2],
+        domain: [0, 100],
     });
     console.log(fireFox);
-    return (
-        <div className='ml-3 border-4'>
 
-            <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
+    const ordinalColorScale = scaleOrdinal({
+        domain: ['FireFox', 'Google Chrome', 'Safari', 'Mozilla', 'Microsoft Edge'],
+        range: ['#E2006A', '#004FB4', '#0000FF', '#16A64D', '#A52A2'],
+    });
+
+
+    return (
+        <div className='ml-3 border-4 flex'>
+
+            <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className='broder-4'>
 
                 <Group top={margin.top} left={margin.left}>
                     <AreaClosed<typeof fireFox>
@@ -137,7 +158,7 @@ function GradientGraph() {
                         strokeWidth={1}
                         stroke="url(#area-gradient)"
                         fill="#E2006A"
-                        fillOpacity= {0.4}
+                        fillOpacity={0.4}
                         curve={curveMonotoneX}
                     />
 
@@ -151,13 +172,13 @@ function GradientGraph() {
                         strokeWidth={1}
                         stroke="url(#area-gradient)"
                         fill="#16A64D"
-                        fillOpacity= {0.4}
+                        fillOpacity={0.4}
                         curve={curveMonotoneX}
                     />
                 </Group>
                 <Group top={margin.top} left={margin.left}>
                     <AreaClosed<typeof GoogleChrome>
-                                data={GoogleChrome}
+                        data={GoogleChrome}
                         x={(d) => xScale(x(d)) ?? 0}
                         y={(d) => yScale(y(d)) ?? 0}
                         yScale={yScale}
@@ -177,7 +198,7 @@ function GradientGraph() {
                         stroke="url(#area-gradient)"
                         strokeWidth={1}
                         fill="#0000FF"
-                        fillOpacity= {0.4}
+                        fillOpacity={0.4}
                         curve={curveMonotoneX}
 
                     />
@@ -190,8 +211,8 @@ function GradientGraph() {
                         yScale={yScale}
                         stroke="url(#area-gradient)"
                         strokeWidth={2}
-                        fill= "#A52A2"
-                        fillOpacity= {0.4}
+                        fill="#A52A2"
+                        fillOpacity={0.4}
                         curve={curveMonotoneX}
 
                     />
@@ -219,7 +240,7 @@ function GradientGraph() {
                         left={margin.left}
                         label={''}
                         stroke={'#1b1a1e'}
-                        // tickTextFill={'#1b1a1e'}
+                    // tickTextFill={'#1b1a1e'}
                     />
                 </Group>
                 <Group >
@@ -229,27 +250,55 @@ function GradientGraph() {
                         left={margin.left}
                         label={'Browser Usage'}
                         stroke={'#1b1a1e'}
-                        // tickTextFill={'#1b1a1e'}
+                    // tickTextFill={'#1b1a1e'}
                     />
                 </Group>
-                
-
-
 
             </svg>
+            <div className='font-bold background-black border-2 rounded-2xl p-[24px] m-[24px] '>
+
+                <LegendDemo title="Brower Name">
+                    <LegendOrdinal scale={ordinalColorScale} labelFormat={(label) => `${label.toUpperCase()}`}>
+                        {(labels) => (
+                            <div className='flex flex-col border-black-2'>
+                                {labels.map((label, i) => (
+                                    <LegendItem
+                                        key={`legend-quantile-${i}`}
+                                        margin="0 5px"
+                                    
+                                    >
+                                        <svg width={legendGlyphSize} height={legendGlyphSize}>
+                                            <rect fill={label.value} width={legendGlyphSize} height={legendGlyphSize} />
+                                        </svg>
+                                        <LegendLabel className='align-left '>
+                                            {label.text}
+                                        </LegendLabel>
+                                    </LegendItem>
+                                ))}
+                            </div>
+                        )}
+                    </LegendOrdinal>
+                </LegendDemo>
+
+            </div>
+
+
+
+
+
             {tooltipData ? (
-        <TooltipWithBounds
-          key={Math.random()}
-          top={tooltipTop}
-          left={tooltipLeft}
-          style={tooltipStyles}
-        >
-          <b>{`${timeFormat("%b %d, %Y")(
-            new Date(x(tooltipData))
-          )}`}</b>
-          : {y(tooltipData)} percent
-        </TooltipWithBounds>
-      ) : null}
+                <TooltipWithBounds
+                    key={Math.random()}
+                    top={tooltipTop}
+                    left={tooltipLeft}
+                    style={tooltipStyles}
+                >
+                    <b>{`${timeFormat("%b %d, %Y")(
+                        new Date(x(tooltipData))
+                    )}`}</b>
+                    : {y(tooltipData)} percent
+                </TooltipWithBounds>
+            ) : null}
         </div>
     )
 }
@@ -289,3 +338,12 @@ export default GradientGraph
 //
 //     })
 // })
+function LegendDemo({ title, children }: { title: string; children: React.ReactNode }) {
+    return (
+        <div className='leading-[34px] color-[#efefef] '>
+            <div className='font-bold text-2xl'>{title}</div>
+            {children}
+
+        </div>
+    );
+}
